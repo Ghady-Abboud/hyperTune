@@ -119,24 +119,13 @@ src/
     └── fn minimize(objective_fn, bounds, n_iter) -> (best_x, best_y)
 
 
-## RBF Kernel Intuition
-
-k(x1, x2) = exp(-|x1 - x2|² / 2ℓ²)
-
-- Returns 1.0 when x1 == x2 (identical points are perfectly correlated)
-- Returns ~0 when points are far apart (distant points are uncorrelated)
-- length_scale (ℓ) controls "how far is far"
-  - Small ℓ → wiggly function (only nearby points matter)
-  - Large ℓ → smooth function (distant points still correlated)
-
-
 ## Current Progress
 
 - [x] GaussianProcess struct
 - [x] RBF kernel
 - [x] fit() with kernel matrix construction
 - [x] Matrix inversion
-- [ ] predict() function
-- [ ] Expected Improvement acquisition
+- [x] predict() function
+- [x] Expected Improvement acquisition
 - [ ] Optimizer loop
 - [ ] Multi-dimensional support (currently 1D only)
