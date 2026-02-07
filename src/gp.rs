@@ -1,6 +1,6 @@
 use nalgebra::DMatrix;
 
-struct GaussianProcess {
+pub struct GaussianProcess {
     x_train: Vec<f64>,
     y_train: Vec<f64>,
     k_inv: DMatrix<f64>,
@@ -10,7 +10,7 @@ struct GaussianProcess {
 }
 
 impl GaussianProcess {
-    fn new(length_scale : f64, noise : f64) -> Self {
+    pub fn new(length_scale : f64, noise : f64) -> Self {
         GaussianProcess {
             x_train: vec![],
             y_train: vec![],
@@ -21,12 +21,12 @@ impl GaussianProcess {
         }
     }
 
-    fn rbf_kernel(&self, x1: f64, x2: f64) -> f64 {
+    pub fn rbf_kernel(&self, x1: f64, x2: f64) -> f64 {
         let squared_distance: f64 = (x1 - x2).powi(2);
         (-squared_distance / (2.0 * self.length_scale.powi(2))).exp()
     }
 
-    fn fit(&mut self, x: Vec<f64>, y: Vec<f64>) {
+    pub fn fit(&mut self, x: Vec<f64>, y: Vec<f64>) {
         let n = x.len();
         self.x_train = x;
         self.y_train = y;
@@ -46,7 +46,7 @@ impl GaussianProcess {
 
     }
 
-    fn predict(&self, x_new: f64) -> (f64, f64) {
+    pub fn predict(&self, x_new: f64) -> (f64, f64) {
         let n = self.x_train.len();
         let mut k_star : DMatrix<f64> = DMatrix::zeros(n, 1);
         for i in 0..n {
