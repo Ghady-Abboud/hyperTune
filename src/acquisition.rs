@@ -18,17 +18,17 @@ pub fn expected_improvement(mean : f64, std_dev : f64, ymax : f64) -> f64 {
     return ei;
 }
 
-pub fn maximize_acquisition(gp : &gp::GaussianProcess, x_candidates : Vec<f64>, ymax : f64) -> f64 {
-    let mut best_x = x_candidates[0];
-    let (mut mean, mut std_dev) = gp.predict(best_x);
+pub fn maximize_acquisition(gp : &gp::GaussianProcess, x_candidates : Vec<Vec<f64>>, ymax : f64) -> Vec<f64> {
+    let mut best_x = x_candidates[0].clone();
+    let (mut mean, mut std_dev) = gp.predict(&best_x);
     let mut best_ei = expected_improvement(mean, std_dev, ymax);
 
-    for &x in &x_candidates[1..] {
+    for x in &x_candidates[1..] {
         (mean, std_dev) = gp.predict(x);
         let ei = expected_improvement(mean, std_dev, ymax);
         if ei > best_ei {
             best_ei = ei;
-            best_x = x;
+            best_x = x.clone();
         }
     }
     return best_x;
