@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 nalgebra = "0.33"
 statrs = "0.18"
+rand = "0.8"

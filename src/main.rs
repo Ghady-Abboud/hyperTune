@@ -1,40 +1,27 @@
 mod gp;
 mod acquisition;
+mod optimization;
+
+use optimization::BayesianOptimizer;
 
 fn main() {
-    let mut gp = gp::GaussianProcess::new(1.0, 0.1);
+    // Global minimum is at (1, 1) with value 0
+    let rosenbrock = |x: &[f64]| -> f64 {
+        let a = 1.0;
+        let b = 100.0;
+        (a - x[0]).powi(2) + b * (x[1] - x[0].powi(2)).powi(2)
+    };
 
-    // 2D example: 3 observed points, each with 2 dimensions
-    let x_train = vec![
-        vec![0.0, 0.0],
-        vec![1.0, 2.0],
-        vec![3.0, 1.0],
-    ];
-    let y_train = vec![1.0, 0.5, 2.0];
+    // Search space: x in [-2, 2], y in [-2, 2]
+    let bounds = vec![(-2.0, 2.0), (-2.0, 2.0)];
+    let n_iterations = 30;
 
-    gp.fit(x_train.clone(), y_train.clone());
+    // Use a fixed seed for reproducible results
+    let mut optimizer = BayesianOptimizer::with_seed(bounds, n_iterations, Some(42));
+    let (best_x, best_y) = optimizer.minimize(rosenbrock);
 
-    let x_new = vec![1.5, 1.5];
-    let (mean, variance) = gp.predict(&x_new);
-    println!("Prediction at {:?}: mean={:.4}, variance={:.4}", x_new, mean, variance);
-
-    // Find the best observed value (for minimization)
-    let y_min = y_train.iter().cloned().fold(f64::INFINITY, f64::min);
-
-    // Generate candidate points to evaluate (2D grid)
-    let mut x_candidates: Vec<Vec<f64>> = Vec::new();
-    for i in 0..10 {
-        for j in 0..10 {
-            x_candidates.push(vec![i as f64 * 0.5, j as f64 * 0.5]);
-        }
-    }
-
-    // Find the next point to sample using Expected Improvement
-    let next_x = acquisition::maximize_acquisition(&gp, x_candidates, y_min);
-    println!("Next point to sample: {:?}", next_x);
-
-    let (mean, variance) = gp.predict(&next_x);
-    let std_dev = variance.sqrt();
-    let ei = acquisition::expected_improvement(mean, std_dev, y_min);
-    println!("Expected Improvement at {:?}: EI={:.4}", next_x, ei);
+    println!("Optimization complete!");
+    println!("Best parameters: [{:.4}, {:.4}]", best_x[0], best_x[1]);
+    println!("Best value: {:.6}", best_y);
+    println!("True optimum: [1.0, 1.0] with value 0.0");
 }
