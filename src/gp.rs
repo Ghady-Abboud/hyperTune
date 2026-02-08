@@ -21,6 +21,10 @@ impl GaussianProcess {
         }
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.x_train.is_empty()
+    }
+
     pub fn rbf_kernel(&self, x1: &[f64], x2: &[f64]) -> f64 {
         use std::iter::zip;
         let mut sum = 0.0;
@@ -64,5 +68,11 @@ impl GaussianProcess {
         let mean = (&k_star_transpose * &self.alpha)[(0,0)];
         let variance = k_star_star -(&k_star_transpose * &self.k_inv * &k_star)[(0,0)];
         (mean,variance)
+    }
+
+    pub fn update(&mut self, x_new: &[f64], y_new: f64) {
+        self.x_train.push(x_new.to_vec());
+        self.y_train.push(y_new);
+        self.fit(self.x_train.clone(), self.y_train.clone());
     }
 }
