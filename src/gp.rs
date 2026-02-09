@@ -66,8 +66,8 @@ impl GaussianProcess {
         let k_star_transpose = k_star.transpose();
 
         let mean = (&k_star_transpose * &self.alpha)[(0,0)];
-        let variance = k_star_star -(&k_star_transpose * &self.k_inv * &k_star)[(0,0)];
-        (mean,variance)
+        let std_dev = k_star_star -(&k_star_transpose * &self.k_inv * &k_star)[(0,0)].sqrt();
+        (mean,std_dev)
     }
 
     pub fn update(&mut self, x_new: &[f64], y_new: f64) {
